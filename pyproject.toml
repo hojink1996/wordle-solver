@@ -1,0 +1,45 @@
+[tool.poetry]
+name = "wordle-solver"
+version = "0.1.0"
+description = "A Wordle solver based on Information Theory"
+authors = ["Hojin Kang"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+tqdm = "^4.67.1"
+numpy = "^2.2.1"
+
+[tool.poetry.group.dev.dependencies]
+coverage = "^7.6.10"
+pytest = "^8.3.4"
+ruff = "^0.8.6"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.format]
+docstring-code-format = true
+
+[tool.pytest.ini_options]
+pythonpath = [
+  "."
+]
+
+
+[tool.coverage.run]
+branch = true
+source = ["wordle_solver"]
+omit = ["wordle_solver/__init__.py", "wordle_solver/candidates.py"]
+
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 80
+
+[tool.coverage.html]
+directory = "htmlcov"
