@@ -31,6 +31,8 @@ class InvertedIndex(Generic[W, D]):
     def get_does_not_contain(self, words: list[W]) -> set[D]:
         """Returns the set of documents that do not contain the given words."""
         searchable_words = [word for word in self._index.keys() if word not in words]
+        if len(searchable_words) == 0:
+            return set()
         filtered_documents = set.union(*[self._index[word] for word in searchable_words])
 
         return filtered_documents

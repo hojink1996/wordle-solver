@@ -53,7 +53,12 @@ class WordleSolver:
             self.candidate_lister.add_clues(self._clues)
             self.candidate_lister.add_clues(self._get_clues(candidate_guess, possible_word))
             try:
-                entropy = math.log2(len(self.candidate_lister.get_possible_words()))
+                possible_words = self.candidate_lister.get_possible_words()
+                # If there's only one possible word, favor guessing that word by setting it to a smaller value
+                if len(possible_words) == 1 and list(possible_words)[0] == candidate_guess:
+                    entropy = -0.01
+                else:
+                    entropy = math.log2(len(possible_words))
                 entropies.append(entropy)
             except ValueError:
                 print("Error in entropy calculation.")
@@ -65,7 +70,7 @@ class WordleSolver:
         self._clues.extend(clues)
         self.candidate_lister.add_clues(clues)
 
-    def get_best_candidate(self, candidates: set[str], possible_words: set[str]) -> str:
+    def _get_best_candidate(self, candidates: set[str], possible_words: set[str]) -> str:
         """Evaluate the candidates against the possible words to get the best candidate.
 
         Args:
@@ -90,6 +95,12 @@ class WordleSolver:
     def get_next_word(self) -> str:
         """Returns the next word that should be guessed. This is the word that minimizes the expected entropy of the
         possible words."""
+        possible_words = self.get_possible_words()
+        if len(possible_words) == 0:
+            raise ValueError("No possible words given the current clues.")
+        elif len(possible_words) == 1:
+            (word,) = possible_words
+            return word
         self.candidate_lister.reset_clues()
         self.candidate_lister.add_clues(self._clues)
 
@@ -100,10 +111,10 @@ class WordleSolver:
 
         # Do two loops of evaluation to get the best candidate. The first loop uses a smaller search space to narrow
         # down the candidates.
-        best_candidate = self.get_best_candidate(candidates, possible_words)
+        best_candidate = self._get_best_candidate(candidates, possible_words)
         follow_up_candidates = self.search_space.get_follow_up_candidates(best_candidate, current_search_size)
 
-        return self.get_best_candidate(follow_up_candidates, possible_words)
+        return self._get_best_candidate(follow_up_candidates, possible_words)
 
     def get_possible_words(self) -> set[str]:
         """Get the set of all possible words given the current set of clues."""

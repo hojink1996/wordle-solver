@@ -1,8 +1,11 @@
-from typing import Optional
-
 import pytest
 
 from wordle_solver.search_space import SearchSpace
+
+
+@pytest.fixture
+def words() -> set[str]:
+    return {"abc", "def", "ghi", "jkl"}
 
 
 @pytest.mark.parametrize(
@@ -29,7 +32,7 @@ from wordle_solver.search_space import SearchSpace
     ],
 )
 def test_search_space(
-    all_words: set[str],
+    words: set[str],
     groups: dict[str, set[str]],
     current_search_size: int,
     search_size: int,
@@ -38,7 +41,7 @@ def test_search_space(
     expected_follow_up_candidates: set[str],
     use_groups: bool,
 ):
-    search_space = SearchSpace(all_words=all_words, groups=groups if use_groups else None, max_search_size=search_size)
+    search_space = SearchSpace(all_words=words, groups=groups if use_groups else None, max_search_size=search_size)
     initial_candidates = search_space.get_initial_candidates(current_search_size=current_search_size)
     follow_up_candidates = search_space.get_follow_up_candidates(
         best_candidate=best_initial_candidate, current_search_size=current_search_size
